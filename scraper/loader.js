@@ -44,7 +44,7 @@ function startLoader(result) {
     process.stdout.cursorTo(0) // Moving the cursor to the starting point
     process.stdout.write('\u001B[?25h'); // Show the cursor
     console.log("Loading complete!!!!");
-    console.log(result); 
+    console.log(result);
     process.exit()
 }
 

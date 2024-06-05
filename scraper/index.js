@@ -1,21 +1,14 @@
 import puppeteer from "puppeteer";
 import { links } from "../database/database.js";
 import { startLoader } from "./loader.js";
-import * as fs from 'node:fs'
-
-// const link = 'https://www.canadacarcash.com/page-sitemap.xml';
-
-
-// const links = 'https://www.canadacarcash.com/car-title-loans-saskatchewan/'
+import * as fs from "node:fs";
 
 let result = [];
-let error12 = []
 
 let testScrape = async (url) => {
-
   // Launch the browser and open a new blank page
-  // const browser = await puppeteer.launch({ headless: "new", headless: false });
-  const browser = await puppeteer.launch({ headless: "new"});
+  const browser = await puppeteer.launch({ headless: "new", headless: false });
+  // const browser = await puppeteer.launch({ headless: "new" });
   for (const link of url) {
     const page = await browser.newPage();
     await page.setViewport({
@@ -25,69 +18,55 @@ let testScrape = async (url) => {
     });
     page.setDefaultNavigationTimeout(3000000);
 
+    // shows the completed Percentage
+    // console.log((((url.indexOf(link) + 1) / url.length) * 100).toFixed(2) + '%')
+
     try {
       // Navigate the page to a URL
-      await page.goto(link)
+      await page.goto(link);
 
       // Set screen size
       await page.setViewport({ width: 1080, height: 1024 });
 
       // Evaluate the page content in the browser context
       const para = await page.evaluate(() => {
-        // Select all <ul> elements on the page
-        const ulElements = document.querySelectorAll('.question-module ul li');
+        const element = document
+          .querySelectorAll(".titlesechd.bnrt h1")[0]
+          .innerText.toLowerCase();
 
-        // Convert NodeList to an array and return it
-        console.log(ulElements.forEach(ulElement => {
-          ulElement.style.border = "2px solid red";
-        }))
+        console.log(element);
 
-        return Array.from(ulElements).map(li => {
-          const anchor = li.querySelector('a')
-          const span = li.querySelector('span')
-          if (anchor) {
-            return false;
-          } else if (span) {
-            return true;
-          }
-        });
+        const province = "ontario";
 
-      })
+        let idx = element.indexOf(province);
 
-      // console.log(para, "paraResult")
+        console.log(idx === -1 ? false : true);
 
-      let para1 = para.reduce((acc, currentValue) => Boolean(acc + currentValue), false);
-      // console.log(para1, 'para1')
-      // console.log(para)
+        return idx === -1 ? false : true;
+      });
 
-      // console.log(para1)
-      if (para1) {
-        result.push(link)
+      if (para) {
+        result.push(link);
       }
-
     } catch (error) {
-      error12.push(link)
-      console.error('Not Working', error12)
+      console.log(error);
     } finally {
       await page.close();
     }
   }
-  await browser.close()
+  await browser.close();
+};
+
+async function writingResult(result) {
+  const jsonData = JSON.stringify(result);
+  fs.writeFileSync("Results/Result.json", jsonData);
 }
-
-
-async function writingResult (res) {
-  const jsonData = await JSON.stringify(result);
-  fs.writeFileSync('Results/Result.json', jsonData)
-}
-
 
 async function tester() {
-  await testScrape(links)
-  await writingResult(result)
-  startLoader(result)
+  await testScrape(links);
+  // console.log("result", result)
+  await writingResult(result);
+  startLoader(result);
 }
 
-tester()
-
-
+tester();

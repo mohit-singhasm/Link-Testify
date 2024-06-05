@@ -29,7 +29,7 @@ async function scrapingSiteMap(url) {
         const carTitleLinks = linkList.filter(link => link.includes('title'))
         const carCollateralLinks = linkList.filter(link => link.includes('collateral'))
 
-        let linkDatabase = {site, carTitleLinks, carEquityLinks, carCollateralLinks};
+        let linkDatabase = { site, carTitleLinks, carEquityLinks, carCollateralLinks };
         // console.log(linkDatabase);
         console.log(carEquityLinks, carEquityLinks.length);
 
